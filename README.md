@@ -3,7 +3,7 @@
 Solusi automasi Stock Opname terintegrasi yang menjembatani perangkat keras **Handheld RFID** dengan **n8n Automation Engine** untuk akurasi data aset hingga 100%.
 
 ## ✨ Fitur Utama
-* **Multi-Format Support:** Mendukung ekspor data `.xls` (APPCenter), `.csv` (Chainway), dan `.xlsx` (Master).
+* **Multi-Format Support:** Mendukung ekspor data `.xls` (APPCenter Chainway), '.xls' (UHF Chainway), dan `.xlsx` (Master).
 * **Dual-Audit Logic:** Pilihan mode audit berbasis **ASCII (Asset_ID)** atau **HEX (EPC_Refer)**.
 * **Automatic Reconciliation:** Logika pembersihan karakter kotor (*null characters*) dan penentuan status **FOUND/MISSING** secara otomatis.
 * **Scalable Engine:** Mampu memproses ribuan aset dalam hitungan detik menggunakan n8n.
@@ -28,4 +28,5 @@ Solusi automasi Stock Opname terintegrasi yang menjembatani perangkat keras **Ha
 Dokumentasi lengkap mengenai cara penggunaan sistem dapat dilihat di [Dokumen Panduan Operasional (PDF)](./docs/Panduan-Operasional-System-Audit-Terintegrasi-ID.pdf).
 
 ## 👨‍💻 Kontributor
+
 * **Alindra Setya Ardana** - *Presales Engineer & Solution Architect*.
