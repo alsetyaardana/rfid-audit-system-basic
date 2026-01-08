@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Audit Control Center | PT Porta Nusa Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #1B4D3E;
+            --accent-green: #2d6a58;
+            --bg-light: #f8fafc;
+        }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: var(--bg-light); }
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary-green) 0%, #0f2d24 100%);
+        }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <header class="hero-gradient text-white pt-16 pb-24 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white inline-block p-4 rounded-2xl mb-6 card-shadow">
+                <i class="fas fa-broadcast-tower text-4xl text-[#1B4D3E]"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Selamat Datang di Portal Audit RFID</h1>
+            <p class="text-teal-100 text-lg md:text-xl opacity-90 max-w-2xl mx-auto">
+                Solusi Automasi Stock Opname Terintegrasi untuk efisiensi aset perusahaan secara real-time.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 -mt-12 mb-20">
+        
+        <section class="bg-white rounded-3xl p-8 md:p-12 card-shadow mb-10 border border-slate-100">
+            <div class="flex items-center gap-3 mb-8 border-b border-slate-100 pb-4">
+                <i class="fas fa-rocket text-[#1B4D3E] text-2xl"></i>
+                <h2 class="text-2xl font-bold text-slate-800 uppercase tracking-wide">Panduan Penggunaan Sistem</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-x-12 gap-y-6">
+                <ol class="space-y-4">
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">1</span>
+                        <p class="text-sm">Siapkan data <strong>Master Aset</strong> (.xlsx) sesuai format standar.</p>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">2</span>
+                        <p class="text-sm">Gunakan aplikasi <strong>Chainway UHF</strong> pada handheld RFID.</p>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">3</span>
+                        <p class="text-sm">Atur <strong>Format Parsing</strong> (HEX/ASCII) sesuai kebutuhan di handheld.</p>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">4</span>
+                        <p class="text-sm">Lakukan <strong>Pemindaian (Scan)</strong> secara menyeluruh di lokasi.</p>
+                    </li>
+                </ol>
+                <ol class="space-y-4" start="5">
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">5</span>
+                        <p class="text-sm">Simpan dan <strong>Export hasil (.xls)</strong> dari aplikasi handheld.</p>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">6</span>
+                        <p class="text-sm">Pilih <strong>Mode Audit</strong> yang tersedia di dashboard bawah ini.</p>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">7</span>
+                        <p class="text-sm">Unggah file Master & Scan melalui form yang tersedia.</p>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex-none w-7 h-7 bg-[#1B4D3E] text-white rounded-full flex items-center justify-center font-bold text-sm">8</span>
+                        <p class="text-sm">Unduh laporan otomatis dengan status <strong>FOUND/MISSING</strong>.</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-10">
+            <a href="rfidsystemaudit-ascii.html" class="group bg-white p-8 rounded-3xl card-shadow border border-slate-100 hover:border-[#1B4D3E] transition-all duration-300">
+                <div class="w-14 h-14 bg-emerald-50 text-[#1B4D3E] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#1B4D3E] group-hover:text-white transition-all">
+                    <i class="fas fa-font text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2 text-slate-800">Mode ASCII</h3>
+                <p class="text-slate-500 text-sm mb-6">Pencocokan berbasis ID Barang (Asset_ID). Ideal untuk pemindaian teks standar.</p>
+                <span class="text-[#1B4D3E] font-bold text-sm flex items-center gap-2">Pilih Mode <i class="fas fa-arrow-right"></i></span>
+            </a>
+
+            <a href="rfidsystemaudit-hex.html" class="group bg-white p-8 rounded-3xl card-shadow border border-slate-100 hover:border-[#1B4D3E] transition-all duration-300">
+                <div class="w-14 h-14 bg-emerald-50 text-[#1B4D3E] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#1B4D3E] group-hover:text-white transition-all">
+                    <i class="fas fa-hashtag text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2 text-slate-800">Mode HEX</h3>
+                <p class="text-slate-500 text-sm mb-6">Pencocokan berbasis Kode Mentah Pabrikan (EPC_Refer). Presisi hardware tinggi.</p>
+                <span class="text-[#1B4D3E] font-bold text-sm flex items-center gap-2">Pilih Mode <i class="fas fa-arrow-right"></i></span>
+            </a>
+        </div>
+
+        <section class="grid md:grid-cols-2 gap-8">
+            <div class="bg-slate-100/50 rounded-3xl p-8 border border-slate-200">
+                <h4 class="font-bold text-[#1B4D3E] mb-4 flex items-center gap-2">
+                    <i class="fas fa-folder-open"></i> Sample Data (Testing)
+                </h4>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="/samples/Master_Aset.xlsx" download class="text-sm text-slate-600 hover:text-[#1B4D3E] flex items-center gap-2">
+                            <i class="far fa-file-excel"></i> Sample Master Database (.xlsx)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/samples/Scan_Results.xls" download class="text-sm text-slate-600 hover:text-[#1B4D3E] flex items-center gap-2">
+                            <i class="far fa-file-excel"></i> Sample Hasil Scan (.xls)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/samples/Audit_ASCII_2026-01-07.xlsx" download class="text-sm text-slate-600 hover:text-[#1B4D3E] flex items-center gap-2">
+                            <i class="far fa-file-excel"></i> Sample Hasil Report Audit (.xlsx)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-slate-100/50 rounded-3xl p-8 border border-slate-200">
+                <h4 class="font-bold text-[#1B4D3E] mb-4 flex items-center gap-2">
+                    <i class="fas fa-book"></i> Dokumentasi Sistem (PDF)
+                </h4>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="/docs/Panduan-Operasional-System-Audit-Terintegrasi-ID.pdf" target="_blank" class="text-sm text-slate-600 hover:text-[#1B4D3E] flex items-center gap-2">
+                            <i class="far fa-file-pdf"></i> Panduan Operasional System Audit Terintegrasi
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-12 px-6 text-center border-t border-slate-800">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-white font-bold mb-2">Build with Excellence by Alindra Setya Ardana | Presales Engineer</p>
+            <p class="text-sm mb-6">PT Porta Nusa Indonesia — © 2026. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

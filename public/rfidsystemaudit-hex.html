@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Mode: HEX - Alink Technology</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 w-full max-w-xl text-center">
+        <h1 class="text-3xl font-bold text-[#1B4D3E] mb-1">Audit Mode: HEX</h1>
+        <p class="text-gray-500 text-sm mb-8 font-medium">Pencocokan: <span class="font-bold">EPC_Refer (HEX) vs EPC Scan (.xls)</span></p>
+
+        <form id="auditForm" class="text-left space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-[#1B4D3E] uppercase mb-1">Nama Perusahaan:</label>
+                <input type="text" id="perusahaan" placeholder="PT Porta Nusa Indonesia" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-[#1B4D3E] outline-none transition" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-[#1B4D3E] uppercase mb-1">Auditor:</label>
+                <input type="text" id="auditor" placeholder="Nama Personil" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-[#1B4D3E] outline-none transition" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-[#1B4D3E] uppercase mb-1">Tanggal Pelaksanaan Audit:</label>
+                <input type="date" id="tanggal_audit" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-[#1B4D3E] outline-none transition" required>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-[#1B4D3E] uppercase mb-1">Master Database (.xlsx):</label>
+                <input type="file" id="masterFile" accept=".xlsx" class="w-full border border-gray-200 rounded-xl p-2 text-sm bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-gray-100 file:text-[#1B4D3E] hover:file:bg-gray-200" required>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-[#1B4D3E] uppercase mb-1">Hasil Scan Handheld (.xls):</label>
+                <input type="file" id="scanFiles" accept=".xls, .csv" multiple class="w-full border border-gray-200 rounded-xl p-2 text-sm bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-gray-100 file:text-[#1B4D3E] hover:file:bg-gray-200" required>
+                <p class="text-[10px] text-gray-400 mt-1 italic">*Kompatibel dengan hasil export APPCenter/UHF</p>
+            </div>
+
+            <button type="submit" id="btnSubmit" class="w-full bg-[#1B4D3E] hover:bg-[#0f2d24] text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                🚀 Jalankan Audit HEX
+            </button>
+        </form>
+
+        <div class="mt-8">
+            <a href="index.html" class="text-sm text-blue-500 hover:underline">⬅️ Kembali ke Menu Utama</a>
+            <p class="text-[10px] text-gray-400 mt-4">© 2026 PT Porta Nusa Indonesia | Solutions by Alindra</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('auditForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fas fa-spinner animate-spin"></i> Memproses...`;
+
+            const formData = new FormData();
+            formData.append('tanggal_audit', document.getElementById('tanggal_audit').value);
+            formData.append('file_master', document.getElementById('masterFile').files[0]);
+
+            const scanFiles = document.getElementById('scanFiles').files;
+            for (let i = 0; i < scanFiles.length; i++) {
+                formData.append(`file_scan_${i}`, scanFiles[i]);
+            }
+
+            try {
+                const response = await fetch('YOUR_WEBHOOK_URL_HERE', { method: 'POST', body: formData });
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Audit_HEX_${document.getElementById('tanggal_audit').value}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else { alert("Error: n8n gagal memproses."); }
+            } catch (err) { alert("Error: " + err.message); }
+            finally { btnSubmit.disabled = false; btnSubmit.innerHTML = `🚀 Jalankan Audit HEX`; }
+        };
+    </script>
+</body>
+</html>

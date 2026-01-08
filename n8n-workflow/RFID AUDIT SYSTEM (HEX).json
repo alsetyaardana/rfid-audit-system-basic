@@ -1,0 +1,370 @@
+{
+  "name": "RFID AUDIT SYSTEM (HEX)",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "8056a7ef-98db-46ca-8405-10b5ea8b6f3b",
+      "name": "EXTRACT_FILE_MASTER"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Ambil data dari node ekstraksi\nconst masterData = $(\"EXTRACT_FILE_MASTER\").all(); \nconst scanItems = $(\"EXTRACT_FILE_SCAN\").all(); \n\n// 2. Ambil parameter tanggal dari form dashboard\nconst formDate = $(\"INPUT_TRIGGER\").first().json.body[\"tanggal_audit\"] || new Date().toISOString().split('T')[0];\nconst dateHeader = `Audit_HEX_${formDate}`;\n\n// 3. Kumpulkan SEMUA EPC (HEX) dari file scan ke dalam Set\nconst scannedSet = new Set();\nscanItems.forEach(item => {\n    // Ambil nilai kolom pertama (biasanya EPC hasil scan)\n    let epcValue = Object.values(item.json)[0] || \"\"; \n    \n    if (epcValue) {\n        // Bersihkan karakter null dan spasi\n        const cleanEpc = epcValue.toString().replace(/\\0/g, '').trim().toUpperCase();\n        scannedSet.add(cleanEpc);\n    }\n});\n\n// 4. Bandingkan Master (EPC_Refer) dengan daftar Scan\nreturn masterData.map(asset => {\n    // Gunakan kolom EPC_Refer sesuai file Excel kamu\n    const masterHex = (asset.json.EPC_Reference || \"\").toString().replace(/\\0/g, '').trim().toUpperCase();\n    \n    const isFound = scannedSet.has(masterHex);\n\n    return {\n        json: {\n            ...asset.json,\n            [dateHeader]: isFound ? \"FOUND\" : \"MISSING\" //\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        32
+      ],
+      "id": "27fb27ef-a8b4-4b6c-9b85-a703d26a1c11",
+      "name": "CODE_PARSE"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "Report",
+          "sheetName": "database"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        32
+      ],
+      "id": "c4d67f91-c4fa-42cb-9028-46602f717661",
+      "name": "EXPORT_FILE_XLSX"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "audit-proses-hex",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -672,
+        32
+      ],
+      "id": "86480094-3dc1-4ffd-9355-dcec3ab59c0b",
+      "name": "INPUT_TRIGGER",
+      "webhookId": "ad0109eb-f83c-4d2e-a28f-60bb1fe0f49e"
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Disposition",
+                "value": "=attachment; filename=\"Report Stock Opname ({{ $('INPUT_TRIGGER').first().json.body.Auditor }}) - {{ $('INPUT_TRIGGER').first().json.body[\"Nama Perusahaan\"] }}.xlsx\""
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        896,
+        32
+      ],
+      "id": "9a78f866-e3ec-40d0-91c9-0da861c8adf1",
+      "name": "RESPOND_BACK"
+    },
+    {
+      "parameters": {
+        "jsCode": "const binaryData = $input.item.binary;\nconst result = [];\n\n// Loop semua file yang masuk ke webhook\nfor (const key in binaryData) {\n  const file = binaryData[key];\n  \n  result.push({\n    json: { \n      fileKey: key, \n      fileName: file.fileName,\n      // Mengambil ekstensi (xlsx/csv) sebagai identitas utama\n      fileExtension: file.fileExtension.toLowerCase() \n    },\n    binary: { \n      // Kita bungkus ulang dengan nama 'data' agar node selanjutnya mudah membacanya\n      data: file \n    }\n  });\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "2b02aa60-166b-4aba-bbca-b630905eae2c",
+      "name": "BINARYTOFILE"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "xlsx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "039f1e0c-d14f-44ab-83c5-ddfe153bd095"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xlsx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fc6b865a-5830-464a-9758-3ae33b67725c",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "xls",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xls"
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -224,
+        32
+      ],
+      "id": "9e850f58-64fd-45b5-a8e6-c2007ef466fe",
+      "name": "Switch",
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "empty"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        32
+      ],
+      "id": "cac9d813-98d6-4891-9b2f-3623698439f9",
+      "name": "MERGE"
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        128
+      ],
+      "id": "ed29df8f-3123-4d88-bdfc-b67a44a64299",
+      "name": "EXTRACT_FILE_SCAN"
+    }
+  ],
+  "pinData": {
+    "INPUT_TRIGGER": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.alinktech.my.id",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0",
+            "content-length": "9915",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "accept-language": "en-US,en;q=0.9",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "103.114.142.226",
+            "cf-ipcountry": "ID",
+            "cf-ray": "9ba20d190c7d8194-CGK",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-warp-tag-id": "92445172-64f8-49ef-85a4-d6a0d3100c3f",
+            "connection": "keep-alive",
+            "content-type": "multipart/form-data; boundary=----WebKitFormBoundary3ghmUIpF0ihdzc03",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Microsoft Edge\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "103.114.142.226",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "perusahaan": "PT Sinar Mulya Jaya",
+            "auditor": "Alindra",
+            "tanggal_audit": "2026-01-15"
+          },
+          "webhookUrl": "https://n8n.alinktech.my.id/webhook/audit-proses-hex",
+          "executionMode": "production"
+        },
+        "binary": {
+          "file_master": {
+            "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "fileExtension": "xlsx",
+            "data": "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",
+            "fileName": "Report Stock Opname (Al) - PT Sinar Jaya Mulya.xlsx",
+            "fileSize": "8.94 kB"
+          },
+          "file_scan_0": {
+            "mimeType": "text/csv",
+            "fileType": "text",
+            "fileExtension": "csv",
+            "data": "77u/RVBDLFRJRCxVU0VSLENPVU5ULFJTU0kNCjQ5NEU1NjJENEM1NDUwMkQzMDMwMzAzMSwsLDMsLTY0LjQwDQo0OTRFNTYyRDRDNTQ1MDJEMzAzMDMwMzIsLCwyLC02Mi4yMA0KNDk0RTU2MkQ0NjU1NTIyRDMwMzAzMDMxLCwsMSwtNjUuMzANCjQ5NEU1NjJENDE1MzU0MkQzMDMwMzAzMSwsLDEsLTYzLjgwDQo0OTRFNTYyRDU0NEM1MzJEMzAzMDMwMzEsLCw2LC02NC4yMA0K",
+            "fileName": "20260106145116.csv",
+            "fileSize": "213 B"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "EXTRACT_FILE_MASTER": {
+      "main": [
+        [
+          {
+            "node": "MERGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CODE_PARSE": {
+      "main": [
+        [
+          {
+            "node": "EXPORT_FILE_XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXPORT_FILE_XLSX": {
+      "main": [
+        [
+          {
+            "node": "RESPOND_BACK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INPUT_TRIGGER": {
+      "main": [
+        [
+          {
+            "node": "BINARYTOFILE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BINARYTOFILE": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "EXTRACT_FILE_MASTER",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EXTRACT_FILE_SCAN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MERGE": {
+      "main": [
+        [
+          {
+            "node": "CODE_PARSE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT_FILE_SCAN": {
+      "main": [
+        [
+          {
+            "node": "MERGE",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "847f6df7-58b9-44e0-ba0d-21e0f6889b71",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ba3188364974bbd2568c14d3d53558ac390d1179524d41387a78e80ee6b583f5"
+  },
+  "id": "5Gai6xgBe1PUub2G",
+  "tags": []
+}
